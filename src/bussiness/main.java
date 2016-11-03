@@ -4,21 +4,24 @@
  */
 package bussiness;
 
-import bussiness.config.Config;
-import bussiness.config.FileExportService;
-import bussiness.config.FileImportService;
-import data.entities.Travel;
-import data.entities.Vehicle;
+import config.Config;
+import entities.Route;
+import entities.Vehicle;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  *
- * @author Administrador
+ * @author Yohan Romero
  */
 public class main {
 
+    /**
+     *
+     * @param args The arguments
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // VERIFY THE ARGUMENT
         if (args.length != 1) {
@@ -33,22 +36,11 @@ public class main {
     private static void processFile(String fileLocation) throws Exception {
         try {
             // IMPORT FILE
-            ArrayList<Travel> travels = FileImportService.importTravelsFromFile(fileLocation, Config.IN_FILE_NAME);
-
-            // VERIFY THE TRAVELS LIST SIZE
-            if (travels.size() > Config.MAX_DAILY_TRAVELS) {
-                throw new Exception("Travels size is not valid");
-            }
-
-            // EXECUTE THE TRAVELS
-            Vehicle vehicle = new Vehicle(0, 0, 'N', travels);
-            String log = vehicle.navigate();
-            
+            ArrayList<Route> routes = FileImportService.importRoutesFromFile(fileLocation, Config.IN_FILE_NAME);
+            // EXECUTE ROUTES
+            String log = VehicleExecutor.executeRoutes(routes);
             // EXPORT FILE
             FileExportService.exportLogToFile(fileLocation, Config.OUT_FILE_NAME, log);
-            
-            System.out.println(log);
-
         } catch (FileNotFoundException ex) {
             throw new Exception("An error has ocurred when reading the file " + Config.IN_FILE_NAME);
         } catch (IOException ex) {

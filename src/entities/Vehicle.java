@@ -2,14 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package data.entities;
+package entities;
 
-import bussiness.config.Config;
+import config.Config;
 import java.util.ArrayList;
 
 /**
  *
- * @author Administrador
+ * @author Yohan Romero
  */
 public class Vehicle {
 
@@ -17,24 +17,36 @@ public class Vehicle {
     private int positionY;
     private char direction;
     private int traveledDistance;
-    private ArrayList<Travel> travels;
+    private ArrayList<Route> routes;
 
-    public Vehicle(int positionX, int positionY, char direction, ArrayList<Travel> travels) {
+    /**
+     *
+     * @param positionX The x position
+     * @param positionY The y position
+     * @param direction The direction
+     * @param routes The routes asigned
+     */
+    public Vehicle(int positionX, int positionY, char direction, ArrayList<Route> routes) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.direction = direction;
-        this.travels = travels;
+        this.routes = routes;
         this.traveledDistance = 0;
     }
 
+    /**
+     *
+     * @return The log of the routes
+     * @throws Exception
+     */
     public String navigate() throws Exception {
         StringBuilder log = new StringBuilder();
         log.append("======= Reporte de Recorrido Vehículo X =============\r\n");
 
-        for (Travel travel : travels) {
+        for (Route route : routes) {
             int partialTraveledDistance = 0;
 
-            String movements = travel.getMovements();
+            String movements = route.getMovements();
             for (int i = 0; i < movements.length(); i++) {
                 char movement = movements.charAt(i);
                 if (movement == 'F') {
@@ -48,7 +60,7 @@ public class Vehicle {
                         positionX--;
                     }
                     // IT IS UNDERSTOOD THAT THE LIMIT AREA IS FORMED BY A SQUARE
-                    if (Math.abs(positionX) > Config.MAX_STREET_RADIO || Math.abs(positionY) > Config.MAX_STREET_RADIO) {
+                    if (Math.abs(positionX) > Config.MAX_STREET_RATIO || Math.abs(positionY) > Config.MAX_STREET_RATIO) {
                         throw new Exception("Vehicle out of range");
                     }
                     partialTraveledDistance += 100;
@@ -86,7 +98,7 @@ public class Vehicle {
                 log.append("Oriente");
             }
 
-            log.append(", Distancia: ").append((double) partialTraveledDistance / (double) 1000).append(" kilómetros, ").append(travel.getTraveler().getDocument()).append(", ").append(travel.getTraveler().getName()).append("\r\n");
+            log.append(", Distancia: ").append((double) partialTraveledDistance / (double) 1000).append(" kilómetros, ").append(route.getPassenger().getDocument()).append(", ").append(route.getPassenger().getName()).append("\r\n");
             traveledDistance += partialTraveledDistance;
         }
 
