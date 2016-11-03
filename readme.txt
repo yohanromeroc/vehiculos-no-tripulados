@@ -1,0 +1,1 @@
+Esta es una aplicacion Java Standard, que se puede ejecutar desde consola. Solo recibe un parametro, que corresponde a la ruta de la carpeta donde se encuentran los archivos in.txt, en esta misma carpeta la aplicación escribirá los archivos out.txt.
