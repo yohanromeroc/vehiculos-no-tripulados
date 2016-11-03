@@ -3,6 +3,9 @@ package bussiness;
 import config.Config;
 import entities.Route;
 import entities.Passenger;
+import exceptions.InvalidPassengerDocumentException;
+import exceptions.InvalidPassengerEmailException;
+import exceptions.InvalidPassengerNameException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,38 +49,28 @@ public class FileImportService {
             String passengerName = lineFields[1];
             String passengerEmail = lineFields[2];
             String movements = lineFields[3];
-            int passengerDocumentNumber;
 
             // VALIDATES THE TRAVELER DOCUMENT
-            if (passengerDocument.length() <= 10 && passengerDocument.length() >= 15) {
-                throw new Exception("Passenger document length is invalid in line " + lineNumber);
-            }
-            try {
-                passengerDocumentNumber = Integer.parseInt(passengerDocument);
-            } catch (Exception ex) {
-                throw new Exception("Passenger document is not a number in line " + lineNumber);
+            if (!validatePassengerDocument(passengerDocument)) {
+                throw new InvalidPassengerDocumentException("Passenger document format is invalid at line " + lineNumber);
             }
 
-            // VALIDATES THE TRAVELER NAME
-            if (passengerName.length() > 200) {
-                throw new Exception("Passenger name length is invalid in line " + lineNumber);
+            // VALIDATES THE PASSENGER NAME
+            if (!validatePassengerName(passengerName)) {
+                throw new InvalidPassengerNameException("Passenger name format is invalid at line " + lineNumber);
             }
-            System.out.println("Passenger name: " + passengerName.replaceAll(" ", ""));
-            //if (!travelerName.replaceAll(" ", "").matches("\\w")) { // This does not work
-            //    throw new Exception("Traveler name format is invalid in line " + lineNumber);
-            //}
 
-            // VALIDATES THE TRAVELER EMAIL
-            if (!passengerEmail.replaceAll(" ", "").isEmpty() && !passengerEmail.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
-                throw new Exception("Passenger email format is invalid in line " + lineNumber);
+            // VALIDATES THE PASSENGER EMAIL
+            if (!validatePassengerEmail(passengerEmail)) {
+                throw new InvalidPassengerEmailException("Passenger email format is invalid at line " + lineNumber);
             }
 
             // VALIDATE THE MOVEMENTS
-            if (movements.matches("[FLR]")) {
-                throw new Exception("Some route movements are incorrect");
+            if (!validateMovements(movements)) {
+                throw new Exception("Some route movements are incorrect at line " + lineNumber);
             }
 
-            Passenger passenger = new Passenger(passengerDocumentNumber, passengerName, passengerEmail);
+            Passenger passenger = new Passenger(Integer.parseInt(passengerDocument), passengerName, passengerEmail);
             Route route = new Route(passenger, movements);
 
             routes.add(route);
@@ -85,5 +78,45 @@ public class FileImportService {
         }
 
         return routes;
+    }
+
+    public static boolean validatePassengerDocument(String document) {
+        boolean valid = false;
+
+        if (document.length() >= 10 && document.length() <= 15 && document.matches("[0-9]*")) {
+            valid = true;
+        }
+
+        return valid;
+    }
+
+    public static boolean validatePassengerName(String name) {
+        boolean valid = false;
+
+        if (name.length() <= 200 && name.matches("[\\wÑñ ]*")) {
+            valid = true;
+        }
+
+        return valid;
+    }
+
+    public static boolean validatePassengerEmail(String email) {
+        boolean valid = false;
+
+        if (email.replaceAll(" ", "").isEmpty() || email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+            valid = true;
+        }
+
+        return valid;
+    }
+
+    public static boolean validateMovements(String movements) {
+        boolean valid = false;
+
+        if (movements.matches("[FLR]*")) {
+            valid = true;
+        }
+
+        return valid;
     }
 }

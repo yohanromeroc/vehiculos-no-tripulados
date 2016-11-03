@@ -25,7 +25,7 @@ public class main {
      */
     public static void main(String[] args) throws Exception {
         // VERIFY THE ARGUMENT
-        if (args.length != 10) {
+        if (args.length != 1) {
             throw new Exception("Please specify the IN.txt files location. Only one argument is accepted.");
         } else {
             // READ THE ARGUMENT
@@ -35,10 +35,12 @@ public class main {
     }
 
     private static void processFiles(final String fileLocation) throws Exception {
-        try {
-            for (int i = 1; i <= 20; i++) {
+
+        for (int i = 1; i <= Config.VEHICLES_QUANTITY; i++) {
+            String fileName = "in" + String.format("%02d", i) + ".txt";
+            try {
                 // IMPORT FILE
-                final ArrayList<Route> routes = FileImportService.importRoutesFromFile(fileLocation, "in" + i + ".txt");
+                final ArrayList<Route> routes = FileImportService.importRoutesFromFile(fileLocation, fileName);
                 // EXECUTE ROUTES
                 Runnable runable = new Runnable() {
                     @Override
@@ -50,11 +52,12 @@ public class main {
                         }
                     }
                 };
+                runable.run();
+            } catch (FileNotFoundException ex) {
+                throw new Exception("An error has ocurred when reading the file " + fileName);
+            } catch (IOException ex) {
+                throw new Exception("File " + fileName + " not found");
             }
-        } catch (FileNotFoundException ex) {
-            throw new Exception("An error has ocurred when reading the file " + Config.IN_FILE_NAME);
-        } catch (IOException ex) {
-            throw new Exception("File " + Config.IN_FILE_NAME + " not found");
         }
     }
 }
