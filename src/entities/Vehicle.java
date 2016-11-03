@@ -4,6 +4,7 @@
  */
 package entities;
 
+import bussiness.FileExportService;
 import config.Config;
 import java.util.ArrayList;
 
@@ -26,12 +27,16 @@ public class Vehicle {
      * @param direction The direction
      * @param routes The routes asigned
      */
-    public Vehicle(int positionX, int positionY, char direction, ArrayList<Route> routes) {
+    public Vehicle(int positionX, int positionY, char direction, ArrayList<Route> routes) throws Exception {
         this.positionX = positionX;
         this.positionY = positionY;
         this.direction = direction;
         this.routes = routes;
         this.traveledDistance = 0;
+        
+        if (routes.size() > Config.MAX_DAILY_ROUTES) {
+            throw new Exception("Routes quantity is not valid");
+        }
     }
 
     /**

@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class VehicleExecutor {
 
-    public static String executeRoutes(ArrayList<Route> routes) throws Exception {
+    public static void executeRoutes(ArrayList<Route> routes, String fileLocation) throws Exception {
         // VERIFY THE ROUTES LIST SIZE
         if (routes.size() > Config.MAX_DAILY_ROUTES) {
             throw new Exception("Routes quantity is not valid");
@@ -24,7 +24,8 @@ public class VehicleExecutor {
         // EXECUTE THE ROUTES
         Vehicle vehicle = new Vehicle(0, 0, 'N', routes);
         String log = vehicle.navigate();
-
-        return log;
+        
+        // EXPORT FILE
+        FileExportService.exportLogToFile(fileLocation, Config.OUT_FILE_NAME, log);
     }
 }
